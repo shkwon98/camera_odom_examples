@@ -3,7 +3,9 @@ project(camera_odom_isaac_ros_examples)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY config launch rviz DESTINATION share/${PROJECT_NAME})
+install(PROGRAMS scripts/restamp_realsense_rgbd.py
+        DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_pytest REQUIRED)

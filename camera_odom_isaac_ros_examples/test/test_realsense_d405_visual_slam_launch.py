@@ -2,6 +2,7 @@ import importlib.util
 from pathlib import Path
 
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
+from launch_ros.actions import Node
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -15,11 +16,28 @@ def _load_launch(path: Path):
     return module.generate_launch_description()
 
 
+def _assert_rviz_config(path: Path, expected_topics: tuple[str, ...]):
+    assert path.is_file()
+    rviz_text = path.read_text()
+    for expected_text in (
+        "Class: rviz_default_plugins/TF",
+        "Class: rviz_default_plugins/Path",
+        "Class: rviz_default_plugins/Odometry",
+        "Shape: Axes",
+        "Class: rviz_default_plugins/PointCloud2",
+        "Class: rviz_default_plugins/Image",
+    ):
+        assert expected_text in rviz_text
+    for topic in expected_topics:
+        assert topic in rviz_text
+
+
 def test_package_metadata_declares_realsense_dependency_and_test():
     package_xml = (PACKAGE_ROOT / "package.xml").read_text()
     cmake_lists = (PACKAGE_ROOT / "CMakeLists.txt").read_text()
 
     assert "<exec_depend>realsense2_camera</exec_depend>" in package_xml
+    assert "<exec_depend>rviz2</exec_depend>" in package_xml
     assert "test_realsense_d405_visual_slam_launch" in cmake_lists
 
 
@@ -40,10 +58,17 @@ def test_realsense_d405_visual_slam_launch_builds_rgbd_graph():
         "emitter_enabled",
         "image_jitter_threshold_ms",
         "sync_matching_threshold_ms",
+        "launch_rviz",
     ]
 
     assert sum(isinstance(entity, IncludeLaunchDescription) for entity in entities) == 0
     assert sum(isinstance(entity, OpaqueFunction) for entity in entities) == 1
+    assert any(
+        isinstance(entity, Node)
+        and entity.node_package == "rviz2"
+        and entity.node_executable == "rviz2"
+        for entity in entities
+    )
 
     for expected_text in (
         "def _launch_setup(context, *args, **kwargs):",
@@ -71,8 +96,24 @@ def test_realsense_d405_visual_slam_launch_builds_rgbd_graph():
         'DeclareLaunchArgument("color_profile", default_value="640,360,60")',
         'DeclareLaunchArgument("emitter_enabled", default_value="1")',
         'DeclareLaunchArgument("image_jitter_threshold_ms", default_value="20.0")',
+        'DeclareLaunchArgument("launch_rviz", default_value="true")',
+        'IfCondition(LaunchConfiguration("launch_rviz"))',
+        '"realsense_d405_visual_slam.rviz"',
     ):
         assert expected_text in launch_text
+
+    _assert_rviz_config(
+        PACKAGE_ROOT / "rviz" / "realsense_d405_visual_slam.rviz",
+        (
+            "/visual_slam/tracking/odometry",
+            "/visual_slam/tracking/vo_path",
+            "/visual_slam/tracking/slam_path",
+            "/visual_slam/vis/landmarks_cloud",
+            "/visual_slam/vis/observations_cloud",
+            "/camera/color/image_raw",
+            "/camera/aligned_depth_to_color/image_raw",
+        ),
+    )
 
     for removed_argument in (
         "camera_name",

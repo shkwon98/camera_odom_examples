@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch_ros.actions import Node
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +17,22 @@ def _load_launch(path: Path):
     return module.generate_launch_description()
 
 
+def _assert_rviz_config(path: Path, expected_topics: tuple[str, ...]):
+    assert path.is_file()
+    rviz_text = path.read_text()
+    for expected_text in (
+        "Class: rviz_default_plugins/TF",
+        "Class: rviz_default_plugins/Path",
+        "Class: rviz_default_plugins/Odometry",
+        "Shape: Axes",
+        "Class: rviz_default_plugins/PointCloud2",
+        "Class: rviz_default_plugins/Image",
+    ):
+        assert expected_text in rviz_text
+    for topic in expected_topics:
+        assert topic in rviz_text
+
+
 def test_package_metadata_installs_launch_and_config_files():
     package_xml = (PACKAGE_ROOT / "package.xml").read_text()
     cmake_lists = (PACKAGE_ROOT / "CMakeLists.txt").read_text()
@@ -27,13 +44,14 @@ def test_package_metadata_installs_launch_and_config_files():
         "launch",
         "launch_ros",
         "rclcpp_components",
+        "rviz2",
         "zed_components",
         "zed_description",
         "zed_wrapper",
     ):
         assert f"<exec_depend>{dependency}</exec_depend>" in package_xml
 
-    assert "install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME})" in cmake_lists
+    assert "install(DIRECTORY config launch rviz DESTINATION share/${PROJECT_NAME})" in cmake_lists
 
 
 def test_zed2i_specs_select_zed2i_model_and_frames():
@@ -74,8 +92,15 @@ def test_zed2i_visual_slam_launch_builds_vga_stereo_odometry_graph():
         "grab_resolution",
         "image_jitter_threshold_ms",
         "sync_matching_threshold_ms",
+        "launch_rviz",
     ]
     assert sum(isinstance(entity, IncludeLaunchDescription) for entity in entities) == 0
+    assert any(
+        isinstance(entity, Node)
+        and entity.node_package == "rviz2"
+        and entity.node_executable == "rviz2"
+        for entity in entities
+    )
 
     for expected_text in (
         "zed_components",
@@ -103,12 +128,28 @@ def test_zed2i_visual_slam_launch_builds_vga_stereo_odometry_graph():
         'DeclareLaunchArgument("grab_resolution", default_value="VGA")',
         'DeclareLaunchArgument("sync_matching_threshold_ms", default_value="5.0")',
         'DeclareLaunchArgument("image_jitter_threshold_ms", default_value="34.0")',
+        'DeclareLaunchArgument("launch_rviz", default_value="true")',
+        'IfCondition(LaunchConfiguration("launch_rviz"))',
+        '"zed2i_visual_slam.rviz"',
         "zed2i_camera_center",
         "zed2i_left_camera_frame_optical",
         "zed2i_right_camera_frame_optical",
         "return [robot_state_publisher, visual_slam_container]",
     ):
         assert expected_text in launch_text
+
+    _assert_rviz_config(
+        PACKAGE_ROOT / "rviz" / "zed2i_visual_slam.rviz",
+        (
+            "/visual_slam/tracking/odometry",
+            "/visual_slam/tracking/vo_path",
+            "/visual_slam/tracking/slam_path",
+            "/visual_slam/vis/landmarks_cloud",
+            "/visual_slam/vis/observations_cloud",
+            "/left/image_rect",
+            "/right/image_rect",
+        ),
+    )
 
     for removed_text in (
         "isaac_ros_examples.launch.py",

@@ -12,9 +12,12 @@
 
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rclpy</exec_depend>
   <exec_depend>realsense2_camera</exec_depend>
   <exec_depend>rtabmap_odom</exec_depend>
   <exec_depend>rtabmap_slam</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>rviz2</exec_depend>
 
   <test_depend>ament_cmake_pytest</test_depend>
 

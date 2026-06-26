@@ -1,8 +1,10 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
+from launch_ros.substitutions import FindPackageShare
 
 
 def _launch_setup(context, *args, **kwargs):
@@ -74,6 +76,24 @@ def _launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="screen",
+        arguments=[
+            "-d",
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("camera_odom_isaac_ros_examples"),
+                    "rviz",
+                    "realsense_d405_visual_slam.rviz",
+                ]
+            ),
+        ],
+        condition=IfCondition(LaunchConfiguration("launch_rviz")),
+    )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument("depth_profile", default_value="640,360,60"),
@@ -81,6 +101,8 @@ def generate_launch_description():
             DeclareLaunchArgument("emitter_enabled", default_value="1"),
             DeclareLaunchArgument("image_jitter_threshold_ms", default_value="20.0"),
             DeclareLaunchArgument("sync_matching_threshold_ms", default_value="10.0"),
+            DeclareLaunchArgument("launch_rviz", default_value="true"),
             OpaqueFunction(function=_launch_setup),
+            rviz,
         ]
     )

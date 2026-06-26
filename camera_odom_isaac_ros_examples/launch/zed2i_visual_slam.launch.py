@@ -4,6 +4,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
+from launch.conditions import IfCondition
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import ComposableNodeContainer, Node
 from launch_ros.descriptions import ComposableNode
@@ -193,6 +194,24 @@ def _launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
+    rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="screen",
+        arguments=[
+            "-d",
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("camera_odom_isaac_ros_examples"),
+                    "rviz",
+                    "zed2i_visual_slam.rviz",
+                ]
+            ),
+        ],
+        condition=IfCondition(LaunchConfiguration("launch_rviz")),
+    )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -210,6 +229,8 @@ def generate_launch_description():
             DeclareLaunchArgument("grab_resolution", default_value="VGA"),
             DeclareLaunchArgument("image_jitter_threshold_ms", default_value="34.0"),
             DeclareLaunchArgument("sync_matching_threshold_ms", default_value="5.0"),
+            DeclareLaunchArgument("launch_rviz", default_value="true"),
             OpaqueFunction(function=_launch_setup),
+            rviz,
         ]
     )

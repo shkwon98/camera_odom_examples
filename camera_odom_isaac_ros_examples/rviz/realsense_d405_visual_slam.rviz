@@ -1,0 +1,87 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Enabled: true
+      Name: Grid
+      Plane: XY
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Value: true
+    - Class: rviz_default_plugins/Odometry
+      Axes Length: 0.3
+      Axes Radius: 0.03
+      Enabled: true
+      Name: Odometry
+      Shape: Axes
+      Topic:
+        Value: /visual_slam/tracking/odometry
+      Value: true
+    - Class: rviz_default_plugins/Path
+      Enabled: true
+      Name: VO Path
+      Topic:
+        Value: /visual_slam/tracking/vo_path
+      Value: true
+    - Class: rviz_default_plugins/Path
+      Enabled: true
+      Name: SLAM Path
+      Topic:
+        Value: /visual_slam/tracking/slam_path
+      Value: true
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Landmarks
+      Topic:
+        Value: /visual_slam/vis/landmarks_cloud
+      Value: true
+    - Class: rviz_default_plugins/PointCloud2
+      Enabled: true
+      Name: Observations
+      Topic:
+        Value: /visual_slam/vis/observations_cloud
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Color Image
+      Topic:
+        Value: /camera/color/image_raw
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: Aligned Depth Image
+      Topic:
+        Value: /camera/aligned_depth_to_color/image_raw
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: odom
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 5
+      Name: Current View
+      Target Frame: <Fixed Frame>
+      Value: Orbit
+Window Geometry:
+  Height: 900
+  Width: 1400
