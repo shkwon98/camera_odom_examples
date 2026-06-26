@@ -20,11 +20,18 @@ Visualization Manager:
       Show Names: true
       Value: true
     - Class: rviz_default_plugins/Odometry
-      Axes Length: 0.3
-      Axes Radius: 0.03
       Enabled: true
       Name: Odometry
-      Shape: Axes
+      Shape:
+        Alpha: 1
+        Axes Length: 0.12
+        Axes Radius: 0.012
+        Color: 255; 25; 0
+        Head Length: 0.3
+        Head Radius: 0.1
+        Shaft Length: 1
+        Shaft Radius: 0.05
+        Value: Axes
       Topic:
         Value: /odom
       Value: true

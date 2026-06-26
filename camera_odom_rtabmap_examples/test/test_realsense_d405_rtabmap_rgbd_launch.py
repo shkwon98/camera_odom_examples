@@ -23,11 +23,15 @@ def _assert_rviz_config(path: Path, expected_topics: tuple[str, ...]):
         "Class: rviz_default_plugins/TF",
         "Class: rviz_default_plugins/Path",
         "Class: rviz_default_plugins/Odometry",
-        "Shape: Axes",
+        "Shape:",
+        "Axes Length: 0.12",
+        "Axes Radius: 0.012",
+        "Value: Axes",
         "Class: rviz_default_plugins/PointCloud2",
         "Class: rviz_default_plugins/Image",
     ):
         assert expected_text in rviz_text
+    assert "Shape: Axes" not in rviz_text
     for topic in expected_topics:
         assert topic in rviz_text
 
@@ -50,7 +54,7 @@ def test_package_metadata_installs_launch_files():
     ):
         assert f"<exec_depend>{dependency}</exec_depend>" in package_xml
 
-    assert "install(DIRECTORY launch rviz DESTINATION share/${PROJECT_NAME})" in cmake_lists
+    assert "install(DIRECTORY launch rviz config DESTINATION share/${PROJECT_NAME})" in cmake_lists
     assert "install(PROGRAMS" in cmake_lists
     assert "scripts/restamp_realsense_rgbd.py" in cmake_lists
     assert "scripts/restamp_realsense_stereo.py" in cmake_lists

@@ -1,0 +1,18 @@
+/**:
+  ros__parameters:
+    video:
+      publish_rgb: true
+      publish_left_right: false
+      publish_raw: false
+      publish_gray: false
+      publish_stereo: false
+
+    depth:
+      depth_stabilization: 0
+      publish_depth_map: true
+      publish_point_cloud: false
+
+    pos_tracking:
+      pos_tracking_enabled: false
+      publish_odom_pose: false
+      publish_cam_path: false

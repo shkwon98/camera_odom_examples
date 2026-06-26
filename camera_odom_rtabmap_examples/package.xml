@@ -17,8 +17,10 @@
   <exec_depend>realsense2_camera</exec_depend>
   <exec_depend>rtabmap_odom</exec_depend>
   <exec_depend>rtabmap_slam</exec_depend>
+  <exec_depend>rtabmap_sync</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>rviz2</exec_depend>
+  <exec_depend>zed_wrapper</exec_depend>
 
   <test_depend>ament_cmake_pytest</test_depend>
 

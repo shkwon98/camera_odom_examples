@@ -33,6 +33,10 @@ Visualization Manager:
         Shaft Radius: 0.05
         Value: Axes
       Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
         Value: /odom
       Value: true
     - Class: rviz_default_plugins/Path
@@ -51,6 +55,10 @@ Visualization Manager:
       Enabled: true
       Name: Odom Local Map
       Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
         Value: /odom_local_map
       Value: true
     - Class: rtabmap_rviz_plugins/MapCloud
@@ -61,15 +69,15 @@ Visualization Manager:
       Value: true
     - Class: rviz_default_plugins/Image
       Enabled: true
-      Name: Left Infra Image
+      Name: Left Image
       Topic:
-        Value: /camera_odom_d555/infra1/image_rect_raw
+        Value: /zed/zed_node/left/color/rect/image
       Value: true
     - Class: rviz_default_plugins/Image
       Enabled: true
-      Name: Right Infra Image
+      Name: Right Image
       Topic:
-        Value: /camera_odom_d555/infra2/image_rect_raw
+        Value: /zed/zed_node/right/color/rect/image
       Value: true
   Enabled: true
   Global Options:

@@ -3,7 +3,7 @@ project(camera_odom_rtabmap_examples)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY launch rviz DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch rviz config DESTINATION share/${PROJECT_NAME})
 install(PROGRAMS
         scripts/restamp_realsense_rgbd.py
         scripts/restamp_realsense_stereo.py
@@ -19,6 +19,8 @@ if(BUILD_TESTING)
                         test/test_realsense_d555_rtabmap_rgbd_imu_launch.py)
   ament_add_pytest_test(test_realsense_stereo_launches
                         test/test_realsense_stereo_launches.py)
+  ament_add_pytest_test(test_zed2i_rtabmap_launches
+                        test/test_zed2i_rtabmap_launches.py)
 endif()
 
 ament_package()
