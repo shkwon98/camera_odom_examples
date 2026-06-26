@@ -21,8 +21,9 @@ def generate_launch_description():
         ),
         launch_arguments={
             "camera_model": "zed2i",
-            "publish_tf": "false",
+            "publish_tf": "true",
             "publish_map_tf": "false",
+            "publish_imu_tf": "true",
             "ros_params_override_path": PathJoinSubstitution(
                 [
                     FindPackageShare("camera_odom_rtabmap_examples"),

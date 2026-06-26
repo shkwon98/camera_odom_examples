@@ -70,6 +70,12 @@ def test_d555_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
     )
     assert any(
         isinstance(entity, Node)
+        and entity.node_package == "rtabmap_sync"
+        and entity.node_executable == "rgbd_sync"
+        for entity in entities
+    )
+    assert any(
+        isinstance(entity, Node)
         and entity.node_package == "rtabmap_slam"
         and entity.node_executable == "rtabmap"
         for entity in entities
@@ -132,12 +138,15 @@ def test_d555_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
         '("rgb/image", "/camera_odom_d555/color/image_raw")',
         '("depth/image", "/camera_odom_d555/depth/image_rect_raw")',
         '("rgb/camera_info", "/camera_odom_d555/color/camera_info")',
+        '("rgbd_image", "/camera_odom_d555/rgbd_image")',
         '("odom", "/odom")',
     ):
         assert remapping in launch_text
 
     for parameter in (
         '"frame_id": "camera_link"',
+        '"subscribe_rgbd": True',
+        '"approx_sync": True',
         '"sync_queue_size": 10',
         '"qos": 2',
         '"qos_image": 2',
@@ -182,7 +191,6 @@ def test_d555_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
         '"odom_frame_id": "odom"',
         '"map_frame_id": "map"',
         '"publish_tf": True',
-        '"approx_sync": True',
         '"topic_queue_size": 10',
         '"subscribe_depth": True',
         '"/camera_odom_d555/aligned_depth_to_color/image_raw"',

@@ -48,6 +48,7 @@ def test_package_metadata_installs_launch_files():
         "realsense2_camera",
         "rtabmap_odom",
         "rtabmap_slam",
+        "rtabmap_sync",
         "rclpy",
         "sensor_msgs",
         "rviz2",
@@ -87,6 +88,12 @@ def test_d405_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
     )
     assert any(
         isinstance(entity, Node)
+        and entity.node_package == "rtabmap_sync"
+        and entity.node_executable == "rgbd_sync"
+        for entity in entities
+    )
+    assert any(
+        isinstance(entity, Node)
         and entity.node_package == "rtabmap_slam"
         and entity.node_executable == "rtabmap"
         for entity in entities
@@ -119,12 +126,15 @@ def test_d405_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
         '("rgb/image", "/camera/camera/color/image_raw")',
         '("depth/image", "/camera/camera/depth/image_rect_raw")',
         '("rgb/camera_info", "/camera/camera/color/camera_info")',
+        '("rgbd_image", "/camera_odom_d405/rgbd_image")',
         '("odom", "/odom")',
     ):
         assert remapping in launch_text
 
     for parameter in (
         '"frame_id": "camera_link"',
+        '"subscribe_rgbd": True',
+        '"approx_sync": True',
         '"sync_queue_size": 10',
         '"qos": 2',
         '"qos_image": 2',
@@ -178,7 +188,6 @@ def test_d405_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
         'LaunchConfiguration("frame_id")',
         'LaunchConfiguration("odom_frame_id")',
         'LaunchConfiguration("map_frame_id")',
-        'LaunchConfiguration("approx_sync")',
         'LaunchConfiguration("publish_tf")',
         'DeclareLaunchArgument("enable_sync"',
         'DeclareLaunchArgument("enable_rgbd"',
@@ -189,12 +198,10 @@ def test_d405_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
         'DeclareLaunchArgument("frame_id"',
         'DeclareLaunchArgument("odom_frame_id"',
         'DeclareLaunchArgument("map_frame_id"',
-        'DeclareLaunchArgument("approx_sync"',
         'DeclareLaunchArgument("publish_tf"',
         '"odom_frame_id": "odom"',
         '"map_frame_id": "map"',
         '"publish_tf": True',
-        '"approx_sync": True',
         '"topic_queue_size": 10',
         '"subscribe_depth": True',
         '"/camera/camera/aligned_depth_to_color/image_raw"',

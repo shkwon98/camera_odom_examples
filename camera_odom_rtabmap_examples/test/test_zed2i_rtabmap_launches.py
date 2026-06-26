@@ -42,6 +42,8 @@ def _assert_common_zed_launch(
     rviz_name: str,
     odometry_executable: str,
     expected_topics: tuple[str, ...],
+    publish_tf: str = "false",
+    publish_imu_tf: str | None = None,
 ):
     launch_file = PACKAGE_ROOT / "launch" / launch_name
     assert launch_file.is_file()
@@ -79,7 +81,7 @@ def _assert_common_zed_launch(
         'FindPackageShare("zed_wrapper")',
         '"zed_camera.launch.py"',
         '"camera_model": "zed2i"',
-        '"publish_tf": "false"',
+        f'"publish_tf": "{publish_tf}"',
         '"publish_map_tf": "false"',
         '"frame_id": "zed_camera_link"',
         '"sync_queue_size": 10',
@@ -92,6 +94,8 @@ def _assert_common_zed_launch(
         '"-d"',
     ):
         assert expected_text in launch_text
+    if publish_imu_tf is not None:
+        assert f'"publish_imu_tf": "{publish_imu_tf}"' in launch_text
 
     _assert_rviz_config(
         PACKAGE_ROOT / "rviz" / rviz_name,
@@ -159,6 +163,8 @@ def test_zed2i_rgbd_imu_launch_uses_zed_imu_with_rgbd_odometry():
             "/zed/zed_node/rgb/color/rect/image",
             "/zed/zed_node/depth/depth_registered",
         ),
+        publish_tf="true",
+        publish_imu_tf="true",
     )
 
     assert any(
@@ -223,6 +229,8 @@ def test_zed2i_stereo_imu_launch_uses_zed_imu_with_stereo_odometry():
             "/zed/zed_node/left/color/rect/image",
             "/zed/zed_node/right/color/rect/image",
         ),
+        publish_tf="true",
+        publish_imu_tf="true",
     )
 
     assert not any(

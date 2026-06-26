@@ -32,10 +32,28 @@ def generate_launch_description():
         ],
     )
 
+    rgbd_sync = Node(
+        package="rtabmap_sync",
+        executable="rgbd_sync",
+        output="screen",
+        parameters=[
+            {
+                "approx_sync": True,
+                "sync_queue_size": 10,
+                "qos": 2,
+                "qos_camera_info": 2,
+            }
+        ],
+        remappings=[
+            ("rgb/image", "/camera/camera/color/image_raw"),
+            ("depth/image", "/camera/camera/depth/image_rect_raw"),
+            ("rgb/camera_info", "/camera/camera/color/camera_info"),
+            ("rgbd_image", "/camera_odom_d405/rgbd_image"),
+        ],
+    )
+
     rgbd_remappings = [
-        ("rgb/image", "/camera/camera/color/image_raw"),
-        ("depth/image", "/camera/camera/depth/image_rect_raw"),
-        ("rgb/camera_info", "/camera/camera/color/camera_info"),
+        ("rgbd_image", "/camera_odom_d405/rgbd_image"),
         ("odom", "/odom"),
     ]
 
@@ -46,6 +64,7 @@ def generate_launch_description():
         parameters=[
             {
                 "frame_id": "camera_link",
+                "subscribe_rgbd": True,
                 "sync_queue_size": 10,
                 "qos": 2,
                 "qos_camera_info": 2,
@@ -62,6 +81,7 @@ def generate_launch_description():
         parameters=[
             {
                 "frame_id": "camera_link",
+                "subscribe_rgbd": True,
                 "qos_image": 2,
                 "qos_camera_info": 2,
                 "qos_odom": 2,
@@ -93,6 +113,7 @@ def generate_launch_description():
         [
             DeclareLaunchArgument("launch_rviz", default_value="true"),
             realsense_camera,
+            rgbd_sync,
             rgbd_odometry,
             rtabmap_slam,
             rviz,
