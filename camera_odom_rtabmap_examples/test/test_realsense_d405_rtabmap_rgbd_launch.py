@@ -51,7 +51,9 @@ def test_package_metadata_installs_launch_files():
         assert f"<exec_depend>{dependency}</exec_depend>" in package_xml
 
     assert "install(DIRECTORY launch rviz DESTINATION share/${PROJECT_NAME})" in cmake_lists
-    assert "install(PROGRAMS scripts/restamp_realsense_rgbd.py" in cmake_lists
+    assert "install(PROGRAMS" in cmake_lists
+    assert "scripts/restamp_realsense_rgbd.py" in cmake_lists
+    assert "scripts/restamp_realsense_stereo.py" in cmake_lists
 
 
 def test_d405_rtabmap_rgbd_launch_composes_realsense_odometry_and_slam():
